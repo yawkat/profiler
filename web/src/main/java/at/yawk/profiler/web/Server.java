@@ -22,7 +22,9 @@ class Server extends NanoHTTPD {
         HttpSession wrapper = new HttpSession(session);
 
         try {
-            if (!rootHandler.serve(wrapper, session.getUri())) {
+            String path = session.getUri();
+            if (path.equals("/")) { path = "/list.html"; } // todo: unhardcode
+            if (!rootHandler.serve(wrapper, path)) {
                 wrapper.response.setStatus(Response.Status.NOT_FOUND);
             }
         } catch (Throwable t) {

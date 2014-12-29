@@ -76,6 +76,9 @@ ol li:nth-child(odd) > .tree_node > .tree_node_head .time_bar {
 ol li:nth-child(even) > .tree_node > .tree_node_head .time_bar {
     background-color: #fff;
 }
+#controls {
+    margin-bottom: 1em;
+}
 </style>
 <script type="text/javascript">
 $(function() {
@@ -175,23 +178,23 @@ $(function() {
 {{/partial}}
 
 {{# partial "content"}}
-<div class="btn-group" role="group">
-    <button id="start" type="button" class="btn btn-default btn-success">
+<div class="btn-group btn-group-justified" role="group" id="controls">
+    <a id="start" class="btn btn-default btn-success">
         <span class="glyphicon glyphicon-play"></span>
         Start
-    </button>
-    <button id="stop" type="button" class="btn btn-default btn-warning">
+    </a>
+    <a id="stop" class="btn btn-default btn-warning">
         <span class="glyphicon glyphicon-pause"></span>
         Pause
-    </button>
-    <button id="reset" type="button" class="btn btn-default btn-danger">
+    </a>
+    <a id="reset" class="btn btn-default btn-danger">
         <span class="glyphicon glyphicon-remove"></span>
         Reset
-    </button>
-    <button id="refresh" type="button" class="btn btn-default active">
+    </a>
+    <a id="refresh" class="btn btn-default active">
         <span class="glyphicon glyphicon-refresh"></span>
         Auto Refresh
-    </button>
+    </a>
 </div>
 
 <div id="tree">
@@ -199,4 +202,6 @@ $(function() {
 </div>
 {{/partial}}
 
-{{> layout}}
+{{# partial "path"}}../../{{/partial}}
+
+{{> vm/layout}}

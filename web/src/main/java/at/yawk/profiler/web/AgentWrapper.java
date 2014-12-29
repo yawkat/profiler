@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 public class AgentWrapper implements AutoCloseable {
     @Getter private final App app;
-    final VmDescriptor vm;
+    @Getter final VmDescriptor vm;
     @Getter private final Agent agent;
 
     @Getter private ContextHandler handler;

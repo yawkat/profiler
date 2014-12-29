@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Consumer;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.reflections.Reflections;
@@ -26,7 +27,7 @@ public class Agent implements AutoCloseable {
     private final Session session;
     private final boolean closeSessionWhenDone;
 
-    private Set<String> loadedClasses = Collections.synchronizedSet(new HashSet<>());
+    @Getter private Set<String> loadedClasses = Collections.synchronizedSet(new HashSet<>());
     private Path agentJarPath;
     private AgentConnector connector;
 

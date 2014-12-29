@@ -8,7 +8,6 @@ import at.yawk.profiler.web.Page;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**

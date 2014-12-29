@@ -64,4 +64,10 @@ class SamplerModule extends Module<Boolean, Snapshot> {
 
         send(snapshot);
     }
+
+    @Override
+    protected void shutdown() {
+        stop();
+        timer.shutdown();
+    }
 }

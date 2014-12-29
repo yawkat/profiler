@@ -59,7 +59,7 @@ public class AgentClient {
 
             ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(dp.getData()));
             String name = ois.readUTF();
-            if (name.isEmpty()) {
+            if (name.equals(Constants.CHANNEL_EXIT)) {
                 break;
             }
 
@@ -70,6 +70,7 @@ public class AgentClient {
                 log(AgentClient.class, e);
             }
         }
+        modulesByName.values().forEach(Module::shutdown);
     }
 
     Module loadModule(Class<? extends Module> moduleClass)

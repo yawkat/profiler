@@ -65,8 +65,10 @@ public class Agent implements AutoCloseable {
     @Override
     public void close() throws Exception {
         try {
-            connector.getConnectionManager().send("", null);
-        } catch (IOException ignored) {}
+            connector.getConnectionManager().send(Constants.CHANNEL_EXIT, null);
+        } catch (IOException e) {
+            log.error("Error while sending exit packet", e);
+        }
         Files.deleteIfExists(agentJarPath);
         if (closeSessionWhenDone) {
             session.close();

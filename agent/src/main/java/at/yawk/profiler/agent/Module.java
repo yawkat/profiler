@@ -20,4 +20,6 @@ public abstract class Module<R, S> {
     protected final void send(S object) throws IOException {
         agent.send(name, object);
     }
+
+    protected void shutdown() {}
 }

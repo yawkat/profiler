@@ -42,6 +42,11 @@ public class SampleAspect extends AgentAspect {
         return new ForestSnapshot();
     }
 
+    @Page(pattern = "forest/index", renderedBy = "vm/sample/forest/index")
+    public Object indexForest() {
+        return snapshotForest();
+    }
+
     private class ForestSnapshot {
         boolean running = forestHandler.isRunning();
         JsonElement tree = forestHandler.dump();

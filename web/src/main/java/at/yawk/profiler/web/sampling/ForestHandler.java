@@ -4,13 +4,13 @@ import at.yawk.profiler.sampler.Sampler;
 import at.yawk.profiler.sampler.Snapshot;
 import at.yawk.profiler.sampler.SnapshotCollector;
 import com.google.common.hash.Hashing;
+import com.google.common.io.BaseEncoding;
 import com.google.gson.JsonElement;
 import com.google.gson.internal.bind.JsonTreeWriter;
 import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Base64;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
@@ -49,7 +49,7 @@ class ForestHandler implements SnapshotCollector {
     synchronized JsonElement dump() {
         JsonTreeWriter writer = new JsonTreeWriter();
         try {
-            root.dump(writer);
+            root.dump(writer, -1);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
@@ -103,7 +103,7 @@ class ForestHandler implements SnapshotCollector {
             children.clear();
         }
 
-        private void dump(JsonWriter into) throws IOException {
+        private void dump(JsonWriter into, int threadTime) throws IOException {
             into.beginObject();
             into.name("id");
             into.value(id);
@@ -111,8 +111,17 @@ class ForestHandler implements SnapshotCollector {
             into.value(displayName);
             into.name("self_time");
             into.value(selfTime);
+            into.name("self_time_percent");
+            into.value(scalePercent((double) selfTime / threadTime));
+            into.name("self_time_percent_size");
+            double selfTimePercentSize = scaleSize((double) selfTime / threadTime);
+            into.value(selfTimePercentSize);
             into.name("total_time");
             into.value(totalTime);
+            into.name("total_time_percent");
+            into.value(scalePercent((double) totalTime / threadTime));
+            into.name("other_time_percent_size");
+            into.value(scaleSize((double) totalTime / threadTime) - selfTimePercentSize);
 
             into.name("children");
             into.beginArray();
@@ -123,7 +132,8 @@ class ForestHandler implements SnapshotCollector {
                     )
                     .forEach(child -> {
                         try {
-                            child.getValue().dump(into);
+                            FNode fn = child.getValue();
+                            fn.dump(into, threadTime == -1 ? fn.totalTime : threadTime);
                         } catch (IOException e) {
                             throw new UncheckedIOException(e);
                         }
@@ -133,8 +143,19 @@ class ForestHandler implements SnapshotCollector {
         }
     }
 
-    private String hash(String id) {
+    private static String hash(String id) {
         byte[] md5Bytes = Hashing.md5().hashString(id, StandardCharsets.UTF_8).asBytes();
-        return Base64.getEncoder().encodeToString(md5Bytes);
+        return BaseEncoding.base64Url().omitPadding().encode(md5Bytes);
+    }
+
+    private static int scalePercent(double fraction) {
+        if (Double.isNaN(fraction)) { return 0; }
+        return (int) Math.round(fraction * 100);
+    }
+
+    private static double scaleSize(double fraction) {
+        if (Double.isNaN(fraction)) { return 0; }
+        // makes small fractions larger
+        return Math.sqrt(fraction) * 100;
     }
 }

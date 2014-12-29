@@ -1,0 +1,172 @@
+{{# partial "head"}}
+<style type="text/css">
+ol {
+    list-style-type: none;
+    padding-left: 1em;
+    padding-bottom: 0.5em;
+}
+ol li:nth-child(odd) {
+    background-color: #fff;
+}
+ol li:nth-child(even) {
+    background-color: #eee;
+}
+li {
+    margin: 0;
+    padding: 0;
+}
+p {
+    margin: 0;
+}
+.tree_node {
+    border: 1px solid #f8f8f8;
+    border-radius: 4px;
+}
+.tree_node:hover {
+    border: 1px solid #ccc;
+}
+#tree > .tree_node {
+    border: 0;
+}
+#tree > .tree_node > ol {
+    padding: 0;
+}
+#tree > .tree_node > .tree_node_head {
+    display: none;
+}
+.expander {
+    -webkit-transition: 0.1s linear; 
+    -moz-transition: 0.1s linear; 
+    -o-transition: 0.1s linear; 
+    transition: 0.1s linear;
+}
+.expanded > p .expander {
+    -ms-transform: rotate(90deg); /* IE 9 */
+    -webkit-transform: rotate(90deg); /* Chrome, Safari, Opera */
+    transform: rotate(90deg);
+}
+.missing_icon {
+    width: 1em;
+    display: inline-block;
+}
+.expandable {
+    cursor: pointer;
+}
+.tree_node_head {
+    padding: 0.5em;
+}
+.time_bar {
+    display: block;
+    position: relative;
+    float: right;
+    width: 200px;
+}
+.self_time {
+    float: right;
+    background-color: #f2c549;
+}
+.other_time {
+    float: right;
+    background-color: #b0b7ff;
+}
+ol li:nth-child(odd) > .tree_node > .tree_node_head .time_bar {
+    background-color: #eee;
+}
+ol li:nth-child(even) > .tree_node > .tree_node_head .time_bar {
+    background-color: #fff;
+}
+</style>
+<script type="text/javascript">
+$(function() {
+    function set_expand(node, expand) {
+        var expanded = node.hasClass("expanded");
+        if (expand) {
+            node.children("ol").slideDown(200);
+            node.addClass("expanded");
+        } else {
+            node.children("ol").slideUp(200);
+            node.removeClass("expanded");
+        }
+        return expanded != expand;
+    }
+
+    $(".tree_node ol").hide();
+    $("#tree > .tree_node > ol").show();
+
+    function listen(node) {
+        node.find(".tree_node_head").click(function(evt) {
+            var node = $(evt.target).closest(".tree_node");
+            if (!set_expand(node, false)) {
+                set_expand(node, true);
+            }
+        });
+    }
+    listen($("#tree"));
+
+    $("#start").click(function() { $.ajax("start").done(refresh); });
+    $("#stop").click(function() { $.ajax("stop").done(refresh); });
+    $("#reset").click(function() { $.ajax("clear").done(refresh); });
+
+    function refresh() {
+        $.ajax("snapshot.html", { dataType: "text" }).done(function(data) {
+            var dom = $(data);
+            dom.find(".tree_node ol").hide();
+            dom.show();
+            listen(dom);
+
+            $(".expanded").each(function(i, exp) {
+                var now = dom.find("#" + exp.id);
+                now.addClass("expanded");
+                now.children("ol").show();
+            });
+
+            $("#tree").empty();
+            $("#tree").append(dom);
+        });
+    }
+
+    var refresher = null;
+    function start_refreshing() {
+        refresher = setInterval(refresh, 10000);
+    }
+    start_refreshing();
+    $("#refresh").click(function(evt) {
+        var button = $(evt.target);
+        if (button.hasClass("active")) {
+            clearInterval(refresher);
+            button.removeClass("active")
+        } else {
+            start_refreshing();
+            button.addClass("active")
+        }
+    });
+});
+</script>
+{{/partial}}
+
+{{# partial "content"}}
+<div class="btn-group" role="group">
+    <button id="start" type="button" class="btn btn-default">
+        <span class="glyphicon glyphicon-play"></span>
+        Start
+    </button>
+    <button id="stop" type="button" class="btn btn-default">
+        <span class="glyphicon glyphicon-pause"></span>
+        Pause
+    </button>
+    <button id="reset" type="button" class="btn btn-default">
+        <span class="glyphicon glyphicon-remove"></span>
+        Reset
+    </button>
+    <button id="refresh" type="button" class="btn btn-default active">
+        <span class="glyphicon glyphicon-refresh"></span>
+        Auto Refresh
+    </button>
+</div>
+
+<div id="tree">
+    {{> vm/sample/forest/snapshot}}
+</div>
+{{/partial}}
+
+{{> layout}}

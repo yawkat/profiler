@@ -104,11 +104,28 @@ $(function() {
     }
     listen($("#tree"));
 
-    $("#start").click(function() { $.ajax("start").done(refresh); });
-    $("#stop").click(function() { $.ajax("stop").done(refresh); });
-    $("#reset").click(function() { $.ajax("clear").done(refresh); });
+    $("#start").click(function() {
+        $.ajax("start").done(function() {
+            running = true;
+            update_running();
+            refresh(true);
+        }); 
+    });
+    $("#stop").click(function() {
+        $.ajax("stop").done(function() {
+            refresh(true);
+            running = false;
+            update_running();
+        });
+    });
+    $("#reset").click(function() {
+        $.ajax("clear").done(function() {
+            refresh(true);
+        });
+    });
 
-    function refresh() {
+    function refresh(force) {
+        if (!force && !running) { return; }
         $.ajax("snapshot.html", { dataType: "text" }).done(function(data) {
             var dom = $(data);
             dom.find(".tree_node ol").hide();
@@ -128,7 +145,7 @@ $(function() {
 
     var refresher = null;
     function start_refreshing() {
-        refresher = setInterval(refresh, 10000);
+        refresher = setInterval(function() { refresh(false); }, 10000);
     }
     start_refreshing();
     $("#refresh").click(function(evt) {
@@ -141,21 +158,33 @@ $(function() {
             button.addClass("active")
         }
     });
+
+    var running = {{running}};
+    function update_running() {
+        if (running) {
+            $("#start").addClass("disabled");
+            $("#stop").removeClass("disabled");
+        } else {
+            $("#start").removeClass("disabled");
+            $("#stop").addClass("disabled");
+        }
+    }
+    update_running();
 });
 </script>
 {{/partial}}
 
 {{# partial "content"}}
 <div class="btn-group" role="group">
-    <button id="start" type="button" class="btn btn-default">
+    <button id="start" type="button" class="btn btn-default btn-success">
         <span class="glyphicon glyphicon-play"></span>
         Start
     </button>
-    <button id="stop" type="button" class="btn btn-default">
+    <button id="stop" type="button" class="btn btn-default btn-warning">
         <span class="glyphicon glyphicon-pause"></span>
         Pause
     </button>
-    <button id="reset" type="button" class="btn btn-default">
+    <button id="reset" type="button" class="btn btn-default btn-danger">
         <span class="glyphicon glyphicon-remove"></span>
         Reset
     </button>

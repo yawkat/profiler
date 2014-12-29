@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
  * @author yawkat
  */
 class SamplerModule extends Module<Boolean, Snapshot> {
-    private static final long INTERVAL = 100;
+    private static final long INTERVAL = 43;
 
     private final ScheduledExecutorService timer = Executors.newScheduledThreadPool(0, r -> {
         Thread thread = new Thread(r);

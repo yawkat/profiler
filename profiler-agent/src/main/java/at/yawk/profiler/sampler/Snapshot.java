@@ -1,0 +1,39 @@
+package at.yawk.profiler.sampler;
+
+import java.io.Serializable;
+import java.util.Map;
+
+/**
+ * @author yawkat
+ */
+class Snapshot implements Serializable {
+    Map<ThreadIdentity, StackTraceElement[]> stackTraces;
+
+    static class ThreadIdentity implements Serializable {
+        long id;
+        String name;
+        String group;
+
+        private void internStrings() {
+            name = name.intern();
+            group = group.intern();
+        }
+    }
+
+    void internStrings() {
+        for (Map.Entry<ThreadIdentity, StackTraceElement[]> entry : stackTraces.entrySet()) {
+            entry.getKey().internStrings();
+            StackTraceElement[] elements = new StackTraceElement[entry.getValue().length];
+            for (int i = 0; i < entry.getValue().length; i++) {
+                StackTraceElement old = entry.getValue()[i];
+                elements[i] = new StackTraceElement(
+                        old.getClassName().intern(),
+                        old.getMethodName().intern(),
+                        old.getFileName() == null ? null : old.getFileName().intern(),
+                        old.getLineNumber()
+                );
+            }
+            entry.setValue(elements);
+        }
+    }
+}

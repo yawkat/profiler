@@ -14,6 +14,11 @@ import java.util.stream.Collectors;
  */
 class SunAttachmentProviderImpl implements AttachmentProvider {
     @Override
+    public String getShortName() {
+        return "sun";
+    }
+
+    @Override
     public VmDescriptor resolveProcess(int pid) throws AttachmentException {
         for (VmDescriptor descriptor : getRunningDescriptors()) {
             if (descriptor.getPid() == pid) {

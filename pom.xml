@@ -14,6 +14,7 @@
         <module>profiler-agent</module>
         <module>graph</module>
         <module>cli</module>
+        <module>web</module>
     </modules>
 
     <repositories>

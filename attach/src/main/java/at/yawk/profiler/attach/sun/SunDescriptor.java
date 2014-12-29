@@ -1,6 +1,7 @@
 package at.yawk.profiler.attach.sun;
 
 import at.yawk.profiler.attach.AttachmentException;
+import at.yawk.profiler.attach.AttachmentProvider;
 import at.yawk.profiler.attach.Session;
 import at.yawk.profiler.attach.VmDescriptor;
 import com.sun.tools.attach.AttachNotSupportedException;
@@ -17,6 +18,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 class SunDescriptor implements VmDescriptor {
     final VirtualMachineDescriptor descriptor;
+
+    @Override
+    public AttachmentProvider getProvider() {
+        return SunAttachmentProvider.getInstance();
+    }
 
     @Override
     public String getName() {

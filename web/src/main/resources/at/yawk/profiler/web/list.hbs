@@ -1,0 +1,65 @@
+{{# partial "head"}}
+<script type="text/javascript">
+    $(function() {
+        $("#attach_dialog").hide();
+        $("#attach_dialog .modal-footer").click(function() {
+            $("#attach_dialog").hide();
+        });
+        $(".vm").click(function(evt) {
+            var vm = $(evt.target).closest(".vm").data("vmid");
+            $("#attach_dialog").show();
+            $("#attach_dialog .modal-title").text("Attaching...");
+            $("#attach_dialog .modal-body").text("");
+            $("#attach_dialog .modal-footer").hide();
+            $.ajax("vm/" + vm + "/attach")
+                .done(function() {
+                    window.location = "vm/" + vm + "/index.html";
+                })
+                .fail(function(x) {
+                    data = JSON.parse(x.responseText);
+                    $("#attach_dialog .modal-footer").show();
+                    $("#attach_dialog .modal-title").text("Failed to attach to VM")
+                    $("#attach_dialog .modal-body").text(data.error);
+                });
+        });
+    })
+</script>
+{{/partial}}
+
+{{# partial "content"}}
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>PID</th>
+            <th>Name</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#each this}}
+        <tr class="vm" data-vmid="{{id}}" style="cursor: pointer">
+            <td style="width: 15%">{{id}}</td>
+            <td style="width: 5%; text-align: right">{{pid}}</td>
+            <td style="width: 80%">{{name}}</td>
+        </tr>
+        {{/each}}
+    </tbody>
+</table>
+
+<div class="modal" id="attach_dialog" tabindex="-1" role="dialog" aria-labelledby="attach_dialog_label">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="attach_dialog_label"></h4>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{{/partial}}
+
+{{> layout}}

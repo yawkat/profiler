@@ -11,7 +11,9 @@ import at.yawk.profiler.graph.GraphRenderer;
 import at.yawk.profiler.graph.GraphvizRenderer;
 import at.yawk.profiler.graph.InteractiveSvgRenderer;
 import at.yawk.profiler.sampler.Sampler;
+import at.yawk.profiler.sampler.SnapshotCollector;
 import at.yawk.profiler.sampler.StackGraph;
+import at.yawk.profiler.sampler.StackGraphSnapshotCollector;
 import java.io.File;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
@@ -198,21 +200,21 @@ public class Main {
         if (!options.has(sample)) { return false; }
 
         executor.execute(() -> {
+            boolean oneNodePerMethod = !options.has(sampleDisableCross);
+            StackGraph stackGraph = new StackGraph(oneNodePerMethod);
+
+            SnapshotCollector collector = new StackGraphSnapshotCollector(stackGraph);
+
             Sampler sampler = new Sampler(agent);
             log.info("Sampler starting");
-            sampler.start();
+            sampler.start(collector);
             try {
                 Thread.sleep((long) (sampleDuration.value(options) * 1000));
             } catch (InterruptedException e) {
                 return;
             }
-            sampler.stop();
-            log.info("Sampler stopped, computing stack graph");
-
-            boolean oneNodePerMethod = !options.has(sampleDisableCross);
-            StackGraph stackGraph = sampler.getSnapshots().computeStackGraph(oneNodePerMethod);
-
-            log.info("Writing SVG");
+            sampler.stop(collector);
+            log.info("Sampler stopped, writing SVG");
 
             GraphRenderer renderer = new GraphvizRenderer();
             if (!options.has(sampleGraphNoInteractive)) {

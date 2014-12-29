@@ -1,6 +1,9 @@
 package at.yawk.profiler.sampler;
 
 import at.yawk.profiler.agent.Agent;
+import java.util.Collections;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ForkJoinPool;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -13,9 +16,9 @@ public class Sampler {
     private final Agent agent;
     private boolean attached = false;
 
-    @Getter private final SnapshotCollection snapshots = new SnapshotCollection();
+    private final Set<SnapshotCollector> collectors = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
-    public synchronized void start() {
+    public synchronized void start(SnapshotCollector collector) {
         if (!attached) {
             agent.addListener(SamplerModule.class, this::handleSnapshot);
 
@@ -23,14 +26,23 @@ public class Sampler {
             agent.loadModule(SamplerModule.class);
             attached = true;
         }
-        agent.send(SamplerModule.class, true);
+        collectors.add(collector);
+        if (collectors.size() == 1) {
+            agent.send(SamplerModule.class, true);
+        }
     }
 
-    public synchronized void stop() {
-        agent.send(SamplerModule.class, false);
+    public synchronized void stop(SnapshotCollector collector) {
+        collectors.remove(collector);
+        if (collectors.isEmpty()) {
+            agent.send(SamplerModule.class, false);
+        }
     }
 
     private void handleSnapshot(Snapshot snapshot) {
-        ForkJoinPool.commonPool().execute(() -> snapshots.push(snapshot));
+        ForkJoinPool.commonPool().execute(() -> {
+            collectors.parallelStream()
+                    .forEach(collector -> collector.push(snapshot));
+        });
     }
 }

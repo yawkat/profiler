@@ -2,14 +2,16 @@ package at.yawk.profiler.sampler;
 
 import java.io.Serializable;
 import java.util.Map;
+import lombok.Getter;
 
 /**
  * @author yawkat
  */
-class Snapshot implements Serializable {
-    Map<ThreadIdentity, StackTraceElement[]> stackTraces;
+public class Snapshot implements Serializable {
+    @Getter Map<ThreadIdentity, StackTraceElement[]> stackTraces;
 
-    static class ThreadIdentity implements Serializable {
+    @Getter
+    public static class ThreadIdentity implements Serializable {
         long id;
         String name;
         String group;

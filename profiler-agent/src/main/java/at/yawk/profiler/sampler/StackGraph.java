@@ -37,6 +37,17 @@ public class StackGraph {
         @Getter private int totalTime;
 
         private void push(StackTraceElement[] stack, int start) {
+            while (start > 0) {
+                StackTraceElement here = stack[start];
+                StackTraceElement next = stack[start - 1];
+                if (here.getClassName().equals(next.getClassName()) &&
+                    here.getMethodName().equals(next.getMethodName())) {
+                    start--;
+                } else {
+                    break;
+                }
+            }
+
             totalTime++;
             if (start < 0) {
                 selfTime++;

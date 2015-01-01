@@ -14,7 +14,7 @@
     <dependencies>
         <dependency>
             <groupId>at.yawk.profiler</groupId>
-            <artifactId>profiler-agent</artifactId>
+            <artifactId>agent-profiler</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>

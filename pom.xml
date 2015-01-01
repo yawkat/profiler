@@ -11,7 +11,7 @@
     <modules>
         <module>attach</module>
         <module>agent</module>
-        <module>profiler-agent</module>
+        <module>agent-profiler</module>
         <module>graph</module>
         <module>cli</module>
         <module>web</module>

@@ -1,0 +1,208 @@
+{{# partial "head"}}
+<style type="text/css">
+ol {
+    list-style-type: none;
+    padding-left: 1em;
+    padding-bottom: 0.5em;
+}
+ol li:nth-child(odd) {
+    background-color: #fff;
+}
+ol li:nth-child(even) {
+    background-color: #eee;
+}
+li {
+    margin: 0;
+    padding: 0;
+}
+p {
+    margin: 0;
+}
+.tree_node {
+    border: 1px solid #f8f8f8;
+    border-radius: 4px;
+}
+.tree_node:hover {
+    box-shadow: 0 0 10px #eee;
+}
+#tree > .tree_node {
+    border: 0;
+    box-shadow: none;
+}
+#tree > .tree_node > ol {
+    padding: 0;
+}
+#tree > .tree_node > .tree_node_head {
+    display: none;
+}
+.expander {
+    -webkit-transition: 0.1s linear; 
+    -moz-transition: 0.1s linear; 
+    -o-transition: 0.1s linear; 
+    transition: 0.1s linear;
+}
+.expanded > p .expander {
+    -ms-transform: rotate(90deg); /* IE 9 */
+    -webkit-transform: rotate(90deg); /* Chrome, Safari, Opera */
+    transform: rotate(90deg);
+}
+.missing_icon {
+    width: 1em;
+    display: inline-block;
+}
+.expandable {
+    cursor: pointer;
+}
+.tree_node_head {
+    padding: 0.5em;
+}
+.time_bar {
+    display: block;
+    position: relative;
+    float: right;
+    width: 200px;
+}
+.self_time {
+    float: right;
+    background-color: #f2c549;
+}
+.other_time {
+    float: right;
+    background-color: #b0b7ff;
+}
+ol li:nth-child(odd) > .tree_node > .tree_node_head .time_bar {
+    background-color: #eee;
+}
+ol li:nth-child(even) > .tree_node > .tree_node_head .time_bar {
+    background-color: #fff;
+}
+#controls {
+    margin-bottom: 1em;
+}
+#svg {
+    width: 100%;
+}
+#svg_loading {
+    display: none;
+}
+</style>
+<script type="text/javascript">
+$(function() {
+    function set_expand(node, expand) {
+        var expanded = node.hasClass("expanded");
+        if (expand) {
+            node.children("ol").slideDown(200);
+            node.addClass("expanded");
+        } else {
+            node.children("ol").slideUp(200);
+            node.removeClass("expanded");
+        }
+        return expanded != expand;
+    }
+
+    $(".tree_node ol").hide();
+    $("#tree > .tree_node > ol").show();
+
+    function listen(node) {
+        node.find(".tree_node_head").click(function(evt) {
+            var node = $(evt.target).closest(".tree_node");
+            if (!set_expand(node, false)) {
+                set_expand(node, true);
+            }
+        });
+    }
+    listen($("#tree"));
+
+    $("#start").click(function() {
+        $.ajax("start").done(function() {
+            running = true;
+            update_running();
+            refresh(true);
+        }); 
+    });
+    $("#stop").click(function() {
+        $.ajax("stop").done(function() {
+            refresh(true);
+            running = false;
+            update_running();
+        });
+    });
+    $("#reset").click(function() {
+        $.ajax("clear").done(function() {
+            refresh(true);
+        });
+    });
+
+    console.log($("#svg_loading"));
+    $("#svg_loading, #svg").load(function() {
+        var loaded = $("#svg_loading");
+        var replaced = $("#svg");
+        loaded.attr("id", "");
+        replaced.attr("id", "svg_loading");
+        loaded.attr("id", "svg");
+    });
+
+    function refresh(force) {
+        if (!force && !running) { return; }
+        var url = "snapshot.svg#" + Date.now(); // todo: use interactive
+        $("#svg_loading").attr("data", url);
+    }
+
+    var refresher = null;
+    function start_refreshing() {
+        refresher = setInterval(function() { refresh(false); }, 10000);
+    }
+    start_refreshing();
+    $("#refresh").click(function(evt) {
+        var button = $(evt.target);
+        if (button.hasClass("active")) {
+            clearInterval(refresher);
+            button.removeClass("active")
+        } else {
+            start_refreshing();
+            button.addClass("active")
+        }
+    });
+
+    var running = {{running}};
+    function update_running() {
+        if (running) {
+            $("#start").addClass("disabled");
+            $("#stop").removeClass("disabled");
+        } else {
+            $("#start").removeClass("disabled");
+            $("#stop").addClass("disabled");
+        }
+    }
+    update_running();
+});
+</script>
+{{/partial}}
+
+{{# partial "content"}}
+<div class="btn-group btn-group-justified" role="group" id="controls">
+    <a id="start" class="btn btn-default btn-success">
+        <span class="glyphicon glyphicon-play"></span>
+        Start
+    </a>
+    <a id="stop" class="btn btn-default btn-warning">
+        <span class="glyphicon glyphicon-pause"></span>
+        Pause
+    </a>
+    <a id="reset" class="btn btn-default btn-danger">
+        <span class="glyphicon glyphicon-remove"></span>
+        Reset
+    </a>
+    <a id="refresh" class="btn btn-default active">
+        <span class="glyphicon glyphicon-refresh"></span>
+        Auto Refresh
+    </a>
+</div>
+
+<object id="svg"></object>
+<object id="svg_loading"></object> 
+{{/partial}}
+
+{{# partial "path"}}../../{{/partial}}
+
+{{> vm/layout}}

@@ -58,6 +58,7 @@ class ConnectionManager {
                 log.error("Failed to read object", e);
             }
         }
+        socket.close();
     }
 
     void send(String channel, Object object) throws IOException {
@@ -69,7 +70,7 @@ class ConnectionManager {
         byte[] serialized = bos.toByteArray();
         DatagramPacket packet = new DatagramPacket(serialized, serialized.length);
         if (remoteAddress == null) {
-            log.warn("Not sending packet in channel {}, no remote address set!", bos);
+            log.warn("Not sending packet in channel {}, no remote address set!", channel);
             return;
         }
         packet.setSocketAddress(remoteAddress);

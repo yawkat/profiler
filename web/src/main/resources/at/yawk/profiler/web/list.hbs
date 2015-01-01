@@ -12,13 +12,15 @@
             $("#attach_dialog .modal-body").text("");
             $("#attach_dialog .modal-footer").hide();
             $.ajax("vm/" + vm + "/attach")
-                .done(function() {
-                    window.location = "vm/" + vm + "/index.html";
-                })
-                .fail(function(x) {
-                    data = JSON.parse(x.responseText);
+                .always(function(x) {
+                    if (x.status == 200) {
+                        window.location = "vm/" + vm + "/index.html";
+                        return;
+                    }
+                    console.log(x);
                     $("#attach_dialog .modal-footer").show();
                     $("#attach_dialog .modal-title").text("Failed to attach to VM")
+                    data = JSON.parse(x.responseText);
                     $("#attach_dialog .modal-body").text(data.error);
                 });
         });

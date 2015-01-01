@@ -5,6 +5,7 @@ import at.yawk.profiler.web.AgentAspect;
 import at.yawk.profiler.web.Component;
 import at.yawk.profiler.web.Page;
 import at.yawk.profiler.web.Path;
+import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonElement;
 
 /**
@@ -50,5 +51,39 @@ public class SampleAspect extends AgentAspect {
     private class ForestSnapshot {
         boolean running = forestHandler.isRunning();
         JsonElement tree = forestHandler.dump();
+    }
+
+    private GraphHandler graphHandler = new GraphHandler();
+
+    @Page(pattern = "graph/start")
+    public void startGraph() {
+        graphHandler.start(getSampler());
+    }
+
+    @Page(pattern = "graph/stop")
+    public void stopGraph() {
+        graphHandler.stop(getSampler());
+    }
+
+    @Page(pattern = "graph/clear")
+    public void clearGraph() {
+        graphHandler.clear();
+    }
+
+    @Page(pattern = "graph/snapshot\\.svg", mime = "image/svg+xml")
+    public String snapshotGraph() {
+        return graphHandler.toSvg(false);
+    }
+
+    @Page(pattern = "graph/snapshot\\.svg/interactive", mime = "image/svg+xml")
+    public String snapshotGraphInteractive() {
+        return graphHandler.toSvg(true);
+    }
+
+    @Page(pattern = "graph/index", renderedBy = "vm/sample/graph/index")
+    public Object indexGraph() {
+        return ImmutableMap.of(
+                "running", graphHandler.isRunning()
+        );
     }
 }

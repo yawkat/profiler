@@ -15,16 +15,21 @@ import lombok.RequiredArgsConstructor;
 public class StackGraph {
     private final boolean oneNodePerMethod;
 
-    private final Map<String, Node> nodes;
-    @Getter private final Node root = new Node("", null, null);
+    private Map<String, Node> nodes;
+    @Getter private Node root;
 
     public StackGraph(boolean oneNodePerMethod) {
         this.oneNodePerMethod = oneNodePerMethod;
-        nodes = oneNodePerMethod ? new HashMap<>() : null;
+        clear();
     }
 
-    void push(StackTraceElement[] stack) {
+    synchronized void push(StackTraceElement[] stack) {
         root.push(stack, stack.length - 1);
+    }
+
+    public synchronized void clear() {
+        nodes = oneNodePerMethod ? new HashMap<>() : null;
+        root = new Node("", null, null);
     }
 
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)

@@ -13,5 +13,7 @@ import java.lang.annotation.Target;
 public @interface Page {
     String pattern();
 
+    String mime() default "application/json";
+
     String renderedBy() default "";
 }

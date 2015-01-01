@@ -79,8 +79,12 @@ abstract class Aspect {
                             throw new UncheckedIOException(e);
                         }
                     } else {
-                        mime = "application/json";
-                        data = GSON.toJson(result);
+                        mime = annotation.mime();
+                        if (result instanceof String) {
+                            data = (String) result;
+                        } else {
+                            data = GSON.toJson(result);
+                        }
                     }
                     session.data(mime, data);
                     return true;

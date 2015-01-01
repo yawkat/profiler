@@ -70,6 +70,7 @@ public class AgentClient {
                 log(AgentClient.class, e);
             }
         }
+        socket.close();
         modulesByName.values().forEach(Module::shutdown);
     }
 

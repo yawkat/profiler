@@ -57,7 +57,7 @@ public class AgentClient {
         while (true) {
             socket.receive(dp);
 
-            ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(dp.getData()));
+            ObjectInputStream ois = new AgentObjectInputStream(new ByteArrayInputStream(dp.getData()), this);
             String name = ois.readUTF();
             if (name.equals(Constants.CHANNEL_EXIT)) {
                 break;

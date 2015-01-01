@@ -12,6 +12,7 @@
         <module>attach</module>
         <module>agent</module>
         <module>agent-profiler</module>
+        <module>agent-heapdump</module>
         <module>graph</module>
         <module>cli</module>
         <module>web</module>

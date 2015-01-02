@@ -4,6 +4,7 @@ import at.yawk.profiler.agent.Agent;
 import at.yawk.profiler.attach.AttachmentProvider;
 import at.yawk.profiler.attach.VmDescriptor;
 import at.yawk.profiler.attach.sun.SunAttachmentProvider;
+import at.yawk.profiler.web.heapdump.HeapDumpManager;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.Path;
@@ -18,12 +19,14 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class App implements AutoCloseable {
     @Getter private final java.nio.file.Path storageDirectory;
+    @Getter private final HeapDumpManager heapDumpManager;
 
     private final Map<String, AgentWrapper> agents = new HashMap<>();
     private ContextHandler handler;
 
     App(Path storageDirectory) {
         this.storageDirectory = storageDirectory;
+        heapDumpManager = new HeapDumpManager(this);
     }
 
     public synchronized void openAgent(VmDescriptor descriptor) throws IOException, InterruptedException {

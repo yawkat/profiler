@@ -39,9 +39,7 @@ public class MiscVmAspect extends AgentAspect {
                 heapDumpCollector = new HeapDumpCollector(getAgent().getAgent());
             }
         }
-        Path targetFolder = getAgent().getApp().getStorageDirectory().resolve("heapdump");
-        Path target = targetFolder.resolve(LocalDateTime.now().toString());
-        Files.createDirectories(targetFolder);
+        Path target = getAgent().getApp().getHeapDumpManager().createNewDumpTarget();
         heapDumpCollector.dumpHeap(target);
     }
 

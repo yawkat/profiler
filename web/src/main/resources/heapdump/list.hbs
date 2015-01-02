@@ -1,0 +1,13 @@
+{{# partial "content"}}
+<table class="table table-hover">
+    <tbody>
+        {{#each this}}
+        <tr class="heapdump" data-id="{{this}}" style="cursor: pointer">
+            <td>{{this}}</td>
+        </tr>
+        {{/each}}
+    </tbody>
+</table>
+{{/partial}}
+
+{{> root_layout}}

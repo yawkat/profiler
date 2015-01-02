@@ -28,7 +28,7 @@ public class HeapDumpManager {
                     .appendLiteral('-')
                     .appendValue(ChronoField.HOUR_OF_DAY, 2)
                     .appendLiteral('-')
-                    .appendValue(ChronoField.MINUTE_OF_DAY, 2)
+                    .appendValue(ChronoField.MINUTE_OF_HOUR, 2)
                     .appendLiteral('-')
                     .appendValue(ChronoField.SECOND_OF_MINUTE, 2)
                     .toFormatter();

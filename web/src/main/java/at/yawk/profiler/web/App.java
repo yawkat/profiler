@@ -5,8 +5,11 @@ import at.yawk.profiler.attach.AttachmentProvider;
 import at.yawk.profiler.attach.VmDescriptor;
 import at.yawk.profiler.attach.sun.SunAttachmentProvider;
 import java.io.IOException;
+import java.nio.file.*;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -14,8 +17,14 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class App implements AutoCloseable {
+    @Getter private final java.nio.file.Path storageDirectory;
+
     private final Map<String, AgentWrapper> agents = new HashMap<>();
     private ContextHandler handler;
+
+    App(Path storageDirectory) {
+        this.storageDirectory = storageDirectory;
+    }
 
     public synchronized void openAgent(VmDescriptor descriptor) throws IOException, InterruptedException {
         String id = getId(descriptor);

@@ -133,18 +133,21 @@ $(function() {
         });
     });
 
-    console.log($("#svg_loading"));
-    $("#svg_loading, #svg").load(function() {
+    var loading = false;
+    $("#svg_loading").load(function() {
+        if (!loading) { return; }
         var loaded = $("#svg_loading");
         var replaced = $("#svg");
         loaded.attr("id", "");
         replaced.attr("id", "svg_loading");
         loaded.attr("id", "svg");
+        loading = false;
     });
 
     function refresh(force) {
         if (!force && !running) { return; }
         var url = "snapshot.svg#" + Date.now();
+        loading = true;
         $("#svg_loading").attr("data", url);
     }
 

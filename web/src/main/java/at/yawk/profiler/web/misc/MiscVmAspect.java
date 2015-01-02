@@ -44,4 +44,11 @@ public class MiscVmAspect extends AgentAspect {
         Files.createDirectories(targetFolder);
         heapDumpCollector.dumpHeap(target);
     }
+
+    //// detach
+
+    @Page(pattern = "detach")
+    public void detach() throws Exception {
+        getAgent().close();
+    }
 }

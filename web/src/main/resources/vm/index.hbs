@@ -1,29 +1,38 @@
 {{# partial "head"}}
 <script type="text/javascript">
 $(function() {
+    function set_alert_data(title, text, closeable) {
+        $("#dialog").show();
+        $("#dialog_label").text(title);
+        $("#dialog p").text(text);
+        $("#dialog .modal-footer").toggle(closeable);
+    }
     function dump_heap() {
-        $("#dump_dialog").show();
-        $("#dump_dialog_label").text("Dumping Heap...");
-        $("#dump_dialog p").text("This may take a while.");
-        $("#dump_dialog .modal-footer").hide();
+        set_alert_data("Dumping Heap...", "This may take a while.", false);
         $.ajax("dump_heap")
             .done(function() {
-                $("#dump_dialog .modal-footer").show();
-                $("#dump_dialog_label").text("Heap dump successful.");
-                $("#dump_dialog p").text("todo: link");
+                set_alert_data("Heap dump successful", "todo: link", true);
             })
             .fail(function(x) {
-                $("#dump_dialog .modal-footer").show();
-                $("#dump_dialog_label").text("Heap dump failed.");
                 var data = JSON.parse(x.responseText);
-                $("#dump_dialog p").text(data.error);
+                set_alert_data("Heap dump failed", data.error, true);
             });
     }
     $("#dump_heap").click(dump_heap);
-    $("#dump_dialog").hide();
-    $("#dump_dialog .modal-footer").click(function() {
-        $("#dump_dialog").hide();
+    $("#detach").click(function() {
+        set_alert_data("Detaching...", "", false);
+        $.ajax("detach")
+            .done(function() {
+                window.location = "/vm/list.html";
+            })
+            .fail(function(x) {
+                var data = JSON.parse(x.responseText);
+                set_alert_data("Failed to detach", data.error, true);
+            });
     });
+
+    $("#dialog").hide();
+    $("#dialog .modal-footer").click(function() { $("#dialog").hide(); });
 });
 </script>
 {{/partial}}
@@ -47,11 +56,13 @@ $(function() {
     </dl>
 
     <button id="dump_heap" class="btn btn-success">Dump Heap</button>
-    <div class="modal" id="dump_dialog" tabindex="-1" role="dialog" aria-labelledby="dump_dialog_label">
+    <button id="detach" class="btn btn-danger">Detach</button>
+
+    <div class="modal" id="dialog" tabindex="-1" role="dialog" aria-labelledby="dialog_label">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title" id="dump_dialog_label"></h4>
+                    <h4 class="modal-title" id="dialog_label"></h4>
                 </div>
                 <p class="modal-body"></p>
                 <div class="modal-footer">

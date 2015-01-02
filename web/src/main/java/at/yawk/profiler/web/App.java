@@ -37,6 +37,7 @@ public class App implements AutoCloseable {
     }
 
     void remove(AgentWrapper agent) {
+        log.info("Removing agent {}", agent);
         agents.remove(getId(agent.vm));
         handler.removeContext(agent.getHandler());
     }

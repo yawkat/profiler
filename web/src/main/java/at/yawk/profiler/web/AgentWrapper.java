@@ -24,6 +24,7 @@ public class AgentWrapper implements AutoCloseable {
 
     @Override
     public void close() throws Exception {
+        app.remove(this);
         agent.close();
     }
 }

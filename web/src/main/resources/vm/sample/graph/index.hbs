@@ -83,7 +83,8 @@ ol li:nth-child(even) > .tree_node > .tree_node_head .time_bar {
     width: 100%;
 }
 #svg_loading {
-    display: none;
+    position: absolute;
+    left: -999em;
 }
 </style>
 <script type="text/javascript">
@@ -146,7 +147,7 @@ $(function() {
 
     function refresh(force) {
         if (!force && !running) { return; }
-        var url = "snapshot.svg#" + Date.now();
+        var url = "snapshot.svg";
         loading = true;
         $("#svg_loading").attr("data", url);
     }

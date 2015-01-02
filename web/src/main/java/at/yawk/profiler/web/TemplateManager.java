@@ -19,14 +19,7 @@ class TemplateManager {
 
     @Getter private static final TemplateManager instance = new TemplateManager();
 
-    private final Handlebars handlebars = new Handlebars(
-            new URLTemplateLoader() {
-                @Override
-                protected URL getResource(String location) throws IOException {
-                    return TemplateManager.class.getResource(location.substring(1)); // remove leading slash
-                }
-            }
-    );
+    private final Handlebars handlebars = new Handlebars();
 
     public String compile(String path, Object data) throws IOException {
         return handlebars.compile(path).apply(contextualize(data));

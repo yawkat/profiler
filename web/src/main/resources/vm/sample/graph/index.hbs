@@ -144,7 +144,7 @@ $(function() {
 
     function refresh(force) {
         if (!force && !running) { return; }
-        var url = "snapshot.svg#" + Date.now(); // todo: use interactive
+        var url = "snapshot.svg#" + Date.now();
         $("#svg_loading").attr("data", url);
     }
 

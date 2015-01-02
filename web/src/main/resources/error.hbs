@@ -1,0 +1,20 @@
+{{# partial "head"}}
+<style type="text/css">
+#content h1 {
+    font-size: 7em;
+    padding-bottom: 0.1em;
+}
+#content h1, #content p {
+    display: block;
+    margin: 0 auto;
+    text-align: center;
+}
+</style>
+{{/partial}}
+
+{{# partial "content"}}
+<h1>{{code}}</h1>
+<p>{{message}}</p>
+{{/partial}}
+
+{{> root_layout}}

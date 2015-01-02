@@ -23,7 +23,7 @@ class Server extends NanoHTTPD {
 
         try {
             String path = session.getUri();
-            if (path.equals("/")) { path = "/list.html"; } // todo: unhardcode
+            if (path.endsWith("/")) { path += "index.html"; }
             if (!rootHandler.serve(wrapper, path)) {
                 wrapper.response.setStatus(Response.Status.NOT_FOUND);
             }

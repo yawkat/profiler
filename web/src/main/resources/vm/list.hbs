@@ -11,10 +11,10 @@
             $("#attach_dialog .modal-title").text("Attaching...");
             $("#attach_dialog .modal-body").text("");
             $("#attach_dialog .modal-footer").hide();
-            $.ajax("vm/" + vm + "/attach")
+            $.ajax(vm + "/attach")
                 .always(function(x) {
                     if (x.status == 200) {
-                        window.location = "vm/" + vm + "/index.html";
+                        window.location = vm + "/index.html";
                         return;
                     }
                     console.log(x);
@@ -64,4 +64,4 @@
 </div>
 {{/partial}}
 
-{{> layout}}
+{{> root_layout}}

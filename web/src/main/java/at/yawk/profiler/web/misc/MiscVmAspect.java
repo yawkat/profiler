@@ -5,6 +5,7 @@ import at.yawk.profiler.web.AgentAspect;
 import at.yawk.profiler.web.Component;
 import at.yawk.profiler.web.Page;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -39,8 +40,8 @@ public class MiscVmAspect extends AgentAspect {
                 heapDumpCollector = new HeapDumpCollector(getAgent().getAgent());
             }
         }
-        java.nio.file.Path targetFolder = Paths.get("heapdump");
-        java.nio.file.Path target = targetFolder.resolve(LocalDateTime.now().toString());
+        Path targetFolder = Paths.get("heapdump");
+        Path target = targetFolder.resolve(LocalDateTime.now().toString());
         Files.createDirectories(targetFolder);
         heapDumpCollector.dumpHeap(target);
     }

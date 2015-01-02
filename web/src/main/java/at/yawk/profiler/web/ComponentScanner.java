@@ -62,5 +62,16 @@ class ComponentScanner {
             }
             return false;
         });
+        contextHandler.addContext((session, path) -> {
+            if (path.endsWith(".html")) {
+                path = path.substring(0, path.length() - 5);
+                try {
+                    String data = TemplateManager.getInstance().compile(path, null);
+                    session.data("text/html", data);
+                    return true;
+                } catch (IOException ignored) {}
+            }
+            return false;
+        });
     }
 }

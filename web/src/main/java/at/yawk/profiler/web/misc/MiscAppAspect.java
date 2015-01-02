@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
  */
 @Component
 public class MiscAppAspect extends AppAspect {
-    @Page(pattern = "list", renderedBy = "list")
+    @Page(pattern = "vm/list", renderedBy = "vm/list")
     public Object listVms() {
         return getRunning()
                 .stream()

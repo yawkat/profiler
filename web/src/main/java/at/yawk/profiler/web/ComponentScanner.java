@@ -50,7 +50,7 @@ class ComponentScanner {
                 });
         contextHandler.addContext((session, path) -> {
             if (RESOURCE_PATTERN.matcher(path).matches()) {
-                URL url = ComponentScanner.class.getResource(contextPath + path);
+                URL url = ComponentScanner.class.getResource("/" + contextPath + path);
                 if (url != null) {
                     try {
                         session.data("text/html", url.openStream());

@@ -1,27 +1,17 @@
 {{# partial "head"}}
 <script type="text/javascript">
     $(function() {
-        $("#attach_dialog").hide();
-        $("#attach_dialog .modal-footer").click(function() {
-            $("#attach_dialog").hide();
-        });
         $(".vm").click(function(evt) {
             var vm = $(evt.target).closest(".vm").data("vmid");
-            $("#attach_dialog").show();
-            $("#attach_dialog .modal-title").text("Attaching...");
-            $("#attach_dialog .modal-body").text("");
-            $("#attach_dialog .modal-footer").hide();
+            $.dialog("Attaching...", null, false);
             $.ajax(vm + "/attach")
                 .always(function(x) {
                     if (x.status == 200) {
                         window.location = vm + "/index.html";
                         return;
                     }
-                    console.log(x);
-                    $("#attach_dialog .modal-footer").show();
-                    $("#attach_dialog .modal-title").text("Failed to attach to VM")
                     data = JSON.parse(x.responseText);
-                    $("#attach_dialog .modal-body").text(data.error);
+                    $.dialog("Failed to attach to VM", data.error);
                 });
         });
     })
@@ -47,21 +37,6 @@
         {{/each}}
     </tbody>
 </table>
-
-<div class="modal" id="attach_dialog" tabindex="-1" role="dialog" aria-labelledby="attach_dialog_label">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title" id="attach_dialog_label"></h4>
-            </div>
-            <div class="modal-body">
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
 {{/partial}}
 
 {{> root_layout}}

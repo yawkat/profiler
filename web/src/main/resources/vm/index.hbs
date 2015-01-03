@@ -1,38 +1,29 @@
 {{# partial "head"}}
 <script type="text/javascript">
 $(function() {
-    function set_alert_data(title, text, closeable) {
-        $("#dialog").show();
-        $("#dialog_label").text(title);
-        $("#dialog p").text(text);
-        $("#dialog .modal-footer").toggle(closeable);
-    }
     function dump_heap() {
-        set_alert_data("Dumping Heap...", "This may take a while.", false);
+        $.dialog("Dumping Heap...", "This may take a while.", false);
         $.ajax("dump_heap")
             .done(function() {
-                set_alert_data("Heap dump successful", "todo: link", true);
+                $.dialog("Heap dump successful", "todo: link");
             })
             .fail(function(x) {
                 var data = JSON.parse(x.responseText);
-                set_alert_data("Heap dump failed", data.error, true);
+                $.dialog("Heap dump failed", data.error, true);
             });
     }
     $("#dump_heap").click(dump_heap);
     $("#detach").click(function() {
-        set_alert_data("Detaching...", "", false);
+        $.dialog("Detaching...", null, false);
         $.ajax("detach")
             .done(function() {
                 window.location = "/vm/list.html";
             })
             .fail(function(x) {
                 var data = JSON.parse(x.responseText);
-                set_alert_data("Failed to detach", data.error, true);
+                $.dialog("Failed to detach", data.error, true);
             });
     });
-
-    $("#dialog").hide();
-    $("#dialog .modal-footer").click(function() { $("#dialog").hide(); });
 });
 </script>
 {{/partial}}
@@ -57,20 +48,6 @@ $(function() {
 
     <button id="dump_heap" class="btn btn-success">Dump Heap</button>
     <button id="detach" class="btn btn-danger">Detach</button>
-
-    <div class="modal" id="dialog" tabindex="-1" role="dialog" aria-labelledby="dialog_label">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title" id="dialog_label"></h4>
-                </div>
-                <p class="modal-body"></p>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-danger">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
 {{/partial}}
 
 {{> vm/layout}}

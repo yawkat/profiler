@@ -13,6 +13,14 @@
                         Overview
                     </a>
                 </li>
+                {{#unless hasNoTagIndex}}
+                <li>
+                    <a href="{{#block "path"}}{{/block}}top_classes.html">
+                        <span class="glyphicon glyphicon-th-list"></span>
+                        Top Classes
+                    </a>
+                </li>
+                {{/unless}}
             </ul>
         </div>
     </div> 

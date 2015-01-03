@@ -1,0 +1,34 @@
+{{# partial "head"}}
+<style type="text/css">
+.num {
+    text-align: right;
+}
+</style>
+{{/partial}}
+
+{{# partial "content"}}
+<ul class="pager">
+    <li class="previous{{#unless start}} disabled{{/unless}}"><a href="top_classes-{{prevPageStart}}-{{pageSize}}.html"><span>&larr;</span> Older</a></li>
+    <li class="next"><a href="top_classes-{{nextPageStart}}-{{pageSize}}.html">Newer <span>&rarr;</span></a></li>
+</ul>
+<table>
+<thead>
+    <tr>
+        <th width="80%">Name</th>
+        <th width="10%">Instance Count</th>
+        <th width="10%">Bytes</th>
+    </tr>
+</thead>
+<tbody>
+    {{#each types}}
+        <tr>
+            <td>{{name}}</td>
+            <td class="num">{{instanceCount}}</td>
+            <td class="num"><span title="{{memoryUsage}} bytes">{{memoryUsageScaled}}</span></td>
+        </tr>
+    {{/each}}
+</tbody>
+</table>
+{{/partial}}
+
+{{> heapdump/layout}}

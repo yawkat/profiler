@@ -46,6 +46,31 @@ $(function() {
             }
         });
     });
+
+    {{#if hasRootIndex}}
+    {{#if hasNoTagIndex}}
+    $("#progress").hide();
+    function end_progress() {
+        $("#progress").slideUp();
+        clearInterval(progress_updater);
+    }
+    function update_progress() {
+        $.ajax("tag_progress").done(function(data) {
+            if (data.progress >= data.max) { // done
+                end_progress();
+                window.location.reload();
+                return;
+            }
+            var percentage = data.progress / data.max * 100;
+            var bar = $("#progress div");
+            bar.css("width", percentage + "%");
+            bar.text(Math.round(percentage) + "%");
+            $("#progress").slideDown();
+        }).error(end_progress);
+    }
+    var progress_updater = setInterval(update_progress, 500);
+    {{/if}}
+    {{/if}}
 });
 </script>
 {{/partial}}
@@ -61,12 +86,20 @@ $(function() {
         <dd>{{version}}</dd>
         <dt>Time</dt>
         <dd><span title="UNIX {{time}}">{{timeFormatted}}</span></dd>
-        <dt>Identifier Size</dt>
+        <dt>Identifier size</dt>
         <dd>{{identifierSize}} bytes</dd>
         <dt>String table size</dt>
         <dd>{{stringCount}} (<span title="{{stringBytes}} bytes">{{stringBytesScaled}}</span>)</dd>
         {{/if}}
     </dl>
+
+    {{#if hasRootIndex}}
+    {{#if hasNoTagIndex}}
+    <div id="progress" class="progress">
+        <div class="progress-bar" role="progressbar" style="width: 2%;">2%</div>
+    </div>
+    {{/if}}
+    {{/if}}
 
     <button class="btn btn-success{{#if hasRootIndex}} disabled{{/if}}" id="load">Load more</button>
     <button class="btn btn-warning{{#unless hasRootIndex}} disabled{{/unless}}" id="clear_cache">Clear Cache</button>

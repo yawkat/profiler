@@ -18,6 +18,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
@@ -35,7 +36,8 @@ class HeapDumpContext extends Aspect {
     private ContextHandler handler;
     private Indexer indexer;
     private ExecutorService executor;
-    private ContextHandler indexerContext;
+    private IndexerContext indexerContext;
+    private ContextHandler indexerContextHandler;
 
     @Override
     public synchronized ContextHandler makeContextHandler(String path) {
@@ -58,28 +60,31 @@ class HeapDumpContext extends Aspect {
 
     @Page(pattern = "close")
     public synchronized void closeIndexer() {
+        log.info("Shutting down indexer on {}", path);
         executor.shutdownNow();
         executor = null;
         indexer = null;
-        handler.removeContext(indexerContext);
         indexerContext = null;
+        handler.removeContext(indexerContextHandler);
+        indexerContextHandler = null;
         manager.removeFromStrongCache(this);
     }
 
     @Page(pattern = "load")
     public synchronized void loadIndexer() throws Exception {
-        int parallelism = Runtime.getRuntime().availableProcessors() * 2;
         StreamPool pool = new MemoryCachedFilePool(path.toFile());
         if (executor == null) {
+            int parallelism = Runtime.getRuntime().availableProcessors() * 2;
+            AtomicInteger threadCounter = new AtomicInteger();
             executor = new ThreadPoolExecutor(
-                    0,
+                    parallelism,
                     parallelism,
                     10,
                     TimeUnit.SECONDS,
                     new LinkedBlockingQueue<>(),
                     r -> {
                         Thread thread = new Thread(r);
-                        thread.setName("Thread pool thread");
+                        thread.setName("Thread pool thread #" + threadCounter.incrementAndGet());
                         thread.setDaemon(true);
                         return thread;
                     }
@@ -92,8 +97,10 @@ class HeapDumpContext extends Aspect {
             indexer = null;
             throw e;
         }
-        indexerContext = new IndexerContext(app, path, indexer).makeContextHandler("");
-        handler.addContext(indexerContext);
+        indexerContext = new IndexerContext(app, path, indexer);
+        indexerContext.scanTags();
+        indexerContextHandler = indexerContext.makeContextHandler("");
+        handler.addContext(indexerContextHandler);
         manager.addToStrongCache(this);
     }
 
@@ -118,6 +125,7 @@ class HeapDumpContext extends Aspect {
         int stringCount;
         int stringBytes;
         String stringBytesScaled;
+        boolean hasNoTagIndex = true; // using negative here so it defaults to false on other pages
 
         void frIndexer() {
             version = indexer.getHeader().version;
@@ -128,6 +136,7 @@ class HeapDumpContext extends Aspect {
             stringCount = indexer.getStringIndex().size();
             stringBytes = indexer.getStringIndex().sizeBytes();
             stringBytesScaled = FileUtils.byteCountToDisplaySize(stringBytes);
+            hasNoTagIndex = !indexerContext.isComplete();
         }
     }
 }

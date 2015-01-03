@@ -1,21 +1,67 @@
 package at.yawk.profiler.web;
 
 import com.github.jknack.handlebars.Handlebars;
-import com.github.jknack.handlebars.io.URLTemplateLoader;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.gson.*;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
+import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import lombok.Getter;
 
 /**
  * @author yawkat
  */
 class TemplateManager {
-    private static final Gson GSON = new Gson();
+    private static final Gson GSON = new GsonBuilder()
+            .registerTypeAdapter(AtomicInteger.class, new TypeAdapter<AtomicInteger>() {
+                @Override
+                public void write(JsonWriter out, AtomicInteger value) throws IOException {
+                    if (value == null) {
+                        out.nullValue();
+                    } else {
+                        out.value(value.intValue());
+                    }
+                }
+
+                @Override
+                public AtomicInteger read(JsonReader in) throws IOException {
+                    JsonToken type = in.peek();
+                    if (type == JsonToken.NULL) {
+                        in.nextNull();
+                        return null;
+                    } else {
+                        return new AtomicInteger(in.nextInt());
+                    }
+                }
+            })
+            .registerTypeAdapter(AtomicLong.class, new TypeAdapter<AtomicLong>() {
+                @Override
+                public void write(JsonWriter out, AtomicLong value) throws IOException {
+                    if (value == null) {
+                        out.nullValue();
+                    } else {
+                        out.value(value.longValue());
+                    }
+                }
+
+                @Override
+                public AtomicLong read(JsonReader in) throws IOException {
+                    JsonToken type = in.peek();
+                    if (type == JsonToken.NULL) {
+                        in.nextNull();
+                        return null;
+                    } else {
+                        return new AtomicLong(in.nextLong());
+                    }
+                }
+            })
+            .create();
 
     @Getter private static final TemplateManager instance = new TemplateManager();
 

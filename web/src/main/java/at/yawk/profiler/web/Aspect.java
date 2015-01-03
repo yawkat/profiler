@@ -12,12 +12,13 @@ import java.util.regex.Pattern;
 /**
  * @author yawkat
  */
-abstract class Aspect {
+public abstract class Aspect {
     private static final Gson GSON = new Gson();
 
-    ContextHandler makeContextHandler(String path) {
+    public ContextHandler makeContextHandler(String path) {
         ContextHandler contextHandler = new ContextHandler(path);
         for (Method m : getClass().getMethods()) {
+            m.setAccessible(true);
             Page annotation = m.getAnnotation(Page.class);
             if (annotation != null) {
                 Pattern basePattern = Pattern.compile(annotation.pattern());

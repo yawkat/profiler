@@ -4,7 +4,7 @@ import at.yawk.profiler.sampler.Sampler;
 import at.yawk.profiler.web.AgentAspect;
 import at.yawk.profiler.web.Component;
 import at.yawk.profiler.web.Page;
-import at.yawk.profiler.web.Path;
+import at.yawk.profiler.web.ContextPath;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonElement;
 
@@ -12,7 +12,7 @@ import com.google.gson.JsonElement;
  * @author yawkat
  */
 @Component
-@Path("sample/")
+@ContextPath("sample/")
 public class SampleAspect extends AgentAspect {
     private Sampler sampler;
 

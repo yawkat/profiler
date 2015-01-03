@@ -49,15 +49,4 @@ public class MiscAppAspect extends AppAspect {
         getApp().openAgent(descriptor);
         return "";
     }
-
-    @Page(pattern = "heapdump/list", renderedBy = "heapdump/list")
-    public Object listHeapdumps() throws IOException {
-        return getApp()
-                .getHeapDumpManager()
-                .listHeapDumps()
-                .stream()
-                .map(p -> p.getFileName().toString())
-                .sorted(String.CASE_INSENSITIVE_ORDER)
-                .collect(Collectors.toList());
-    }
 }

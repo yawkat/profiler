@@ -43,7 +43,7 @@ class ComponentScanner {
         ComponentScanner.getInstance().makeComponents(type)
                 .forEach(aspect -> {
                     decorator.accept(aspect);
-                    Path annotation = aspect.getClass().getAnnotation(Path.class);
+                    ContextPath annotation = aspect.getClass().getAnnotation(ContextPath.class);
                     String path = annotation == null ? "" : annotation.value();
                     ContextHandler child = aspect.makeContextHandler(path);
                     contextHandler.addContext(child);

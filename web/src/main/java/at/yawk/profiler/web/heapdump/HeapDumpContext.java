@@ -30,10 +30,12 @@ import org.apache.commons.io.FileUtils;
 class HeapDumpContext extends Aspect {
     private final App app;
     private final Path path;
+    private final HeapDumpContextManager manager;
 
     private ContextHandler handler;
     private Indexer indexer;
     private ExecutorService executor;
+    private ContextHandler indexerContext;
 
     @Override
     public synchronized ContextHandler makeContextHandler(String path) {
@@ -59,6 +61,9 @@ class HeapDumpContext extends Aspect {
         executor.shutdownNow();
         executor = null;
         indexer = null;
+        handler.removeContext(indexerContext);
+        indexerContext = null;
+        manager.removeFromStrongCache(this);
     }
 
     @Page(pattern = "load")
@@ -87,6 +92,9 @@ class HeapDumpContext extends Aspect {
             indexer = null;
             throw e;
         }
+        indexerContext = new IndexerContext(app, path, indexer).makeContextHandler("");
+        handler.addContext(indexerContext);
+        manager.addToStrongCache(this);
     }
 
     private class Info {

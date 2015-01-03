@@ -7,7 +7,9 @@ import java.lang.ref.SoftReference;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
@@ -18,7 +20,15 @@ import java.util.stream.Collectors;
 @ContextPath(value = "heapdump/")
 public class HeapDumpContextManager extends AppAspect {
     private final Map<Path, SoftReference<Handler>> contextCache = new HashMap<>();
-    private final Map<Path, HeapDumpContext> strongContextCache = new HashMap<>();
+    private final Set<HeapDumpContext> strongContextCache = new HashSet<>();
+
+    synchronized void addToStrongCache(HeapDumpContext context) {
+        strongContextCache.add(context);
+    }
+
+    synchronized void removeFromStrongCache(HeapDumpContext context) {
+        strongContextCache.remove(context);
+    }
 
     private synchronized Handler getDumpHandler(Path dumpPath) {
         SoftReference<Handler> context = contextCache.get(dumpPath);
@@ -27,7 +37,7 @@ public class HeapDumpContextManager extends AppAspect {
             if (handler != null) { return handler; }
         }
 
-        HeapDumpContext ctx = new HeapDumpContext(getApp(), dumpPath);
+        HeapDumpContext ctx = new HeapDumpContext(getApp(), dumpPath, this);
         ContextHandler handler = ctx.makeContextHandler(dumpPath.getFileName().toString() + "/");
         SoftReference<Handler> reference = new SoftReference<>(handler);
         contextCache.put(dumpPath, reference);

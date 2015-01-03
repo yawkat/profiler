@@ -107,7 +107,9 @@ class HeapDumpContext extends Aspect {
         long time;
         String timeFormatted;
         int identifierSize;
-        long stringCount;
+        int stringCount;
+        int stringBytes;
+        String stringBytesScaled;
 
         void frIndexer() {
             version = indexer.getHeader().version;
@@ -116,6 +118,8 @@ class HeapDumpContext extends Aspect {
                     .format(DateTimeFormatter.ISO_DATE_TIME);
             identifierSize = indexer.getHeader().identifierSize;
             stringCount = indexer.getStringIndex().size();
+            stringBytes = indexer.getStringIndex().sizeBytes();
+            stringBytesScaled = FileUtils.byteCountToDisplaySize(stringBytes);
         }
     }
 }

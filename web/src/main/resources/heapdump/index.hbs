@@ -64,12 +64,12 @@ $(function() {
         <dt>Identifier Size</dt>
         <dd>{{identifierSize}} bytes</dd>
         <dt>String table size</dt>
-        <dd>{{stringCount}}</dd>
+        <dd>{{stringCount}} (<span title="{{stringBytes}} bytes">{{stringBytesScaled}}</span>)</dd>
         {{/if}}
     </dl>
 
     <button class="btn btn-success{{#if hasRootIndex}} disabled{{/if}}" id="load">Load more</button>
-    <button class="btn btn-danger{{#if hasRootIndex}}{{else}} disabled{{/if}}" id="clear_cache">Clear Cache</button>
+    <button class="btn btn-warning{{#unless hasRootIndex}} disabled{{/unless}}" id="clear_cache">Clear Cache</button>
     <button class="btn btn-danger" id="delete">Delete</button>
 {{/partial}}
 

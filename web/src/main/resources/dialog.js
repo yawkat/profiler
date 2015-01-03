@@ -34,7 +34,6 @@ $.dialog = function(title, text, cancellable) {
     } else {
         body.hide();
     }
-    console.log(cancellable);
     if (cancellable || cancellable === undefined) {
         dialog.find("#dialog_footer").show();
     } else {

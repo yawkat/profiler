@@ -1,0 +1,21 @@
+{{# partial "navbar"}}
+    <div class="navbar navbar-static-top">
+        <div class="container">
+            <ul class="nav navbar-nav">
+                <li>
+                    <a href="/heapdump/list.html" title="Saved Heap Dumps">
+                        <span class="glyphicon glyphicon-inbox"></span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{#block "path"}}{{/block}}index.html">
+                        <span class="glyphicon glyphicon-dashboard"></span>
+                        Overview
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div> 
+{{/partial}}
+
+{{> layout}}

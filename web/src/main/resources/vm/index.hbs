@@ -4,8 +4,12 @@ $(function() {
     function dump_heap() {
         $.dialog("Dumping Heap...", "This may take a while.", false);
         $.ajax("dump_heap")
-            .done(function() {
-                $.dialog("Heap dump successful", "todo: link");
+            .done(function(data) {
+                var url = "/heapdump/" + data.name + "/index.html";
+                var ele = $("<a>");
+                ele.attr("href", url);
+                ele.text("Open");
+                $.dialog("Heap dump successful", ele);
             })
             .fail(function(x) {
                 var data = JSON.parse(x.responseText);

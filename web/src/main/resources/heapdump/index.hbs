@@ -1,0 +1,33 @@
+{{# partial "head"}}
+<script type="text/javascript">
+$(function() {
+    $("#delete").click(function() {
+        $.dialog("Deleting...", null, false);
+        $.ajax("delete")
+            .done(function() {
+                window.location = "../list.html";
+                $.dialog("Dump deleted successfully");
+            })
+            .error(function() {
+                data = JSON.parse(x.responseText);
+                $.dialog("Failed to delete heap dump", data.error);
+            });
+    });
+});
+</script>
+{{/partial}}
+
+{{# partial "content"}}
+    <dl class="dl-horizontal">
+        <dt>Name</dt>
+        <dd>{{name}}</dd>
+        <dt>Size</dt>
+        <dd><span title="{{size}} bytes">{{sizeScaled}}</span></dd>
+    </dl>
+
+    <button class="btn btn-success{{#if hasRootIndex}} disabled{{/if}}" id="load">Load more</button>
+    <button class="btn btn-danger{{#if hasRootIndex}}{{else}} disabled{{/if}}" id="clear_cache">Clear Cache</button>
+    <button class="btn btn-danger" id="delete">Delete</button>
+{{/partial}}
+
+{{> heapdump/layout}}

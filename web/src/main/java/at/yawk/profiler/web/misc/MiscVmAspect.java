@@ -4,10 +4,10 @@ import at.yawk.profiler.heapdump.HeapDumpCollector;
 import at.yawk.profiler.web.AgentAspect;
 import at.yawk.profiler.web.Component;
 import at.yawk.profiler.web.Page;
-import java.nio.file.Files;
+import com.google.common.collect.ImmutableMap;
 import java.nio.file.Path;
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -33,7 +33,7 @@ public class MiscVmAspect extends AgentAspect {
     private HeapDumpCollector heapDumpCollector;
 
     @Page(pattern = "dump_heap")
-    public void dumpHeap() throws Throwable {
+    public Map<String, Object> dumpHeap() throws Throwable {
         synchronized (this) {
             if (heapDumpCollector == null) {
                 heapDumpCollector = new HeapDumpCollector(getAgent().getAgent());
@@ -41,6 +41,7 @@ public class MiscVmAspect extends AgentAspect {
         }
         Path target = getAgent().getApp().getHeapDumpManager().createNewDumpTarget();
         heapDumpCollector.dumpHeap(target);
+        return ImmutableMap.of("name", target.getFileName().toString());
     }
 
     //// detach

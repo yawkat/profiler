@@ -29,7 +29,12 @@ $.dialog = function(title, text, cancellable) {
     dialog.find("#dialog_head").text(title);
     var body = dialog.find("#dialog_body");
     if (text) {
-        body.text(text);
+        body.empty();
+        if (typeof text === "string") {
+            body.text(text);
+        } else {
+            body.append(text);
+        }
         body.show();
     } else {
         body.hide();

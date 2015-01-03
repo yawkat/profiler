@@ -5,8 +5,10 @@ import at.yawk.profiler.web.Aspect;
 import at.yawk.profiler.web.ContextHandler;
 import at.yawk.profiler.web.Page;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.io.FileUtils;
 
 /**
  * @author yawkat
@@ -29,5 +31,22 @@ class HeapDumpContext extends Aspect {
     @Page(pattern = "delete")
     public void delete() throws IOException {
         app.getHeapDumpManager().deleteHeapDump(path);
+    }
+
+    @Page(pattern = "index", renderedBy = "heapdump/index")
+    public Object info() throws IOException {
+        return new Info();
+    }
+
+    private class Info {
+        String name = path.getFileName().toString();
+        long size;
+        String sizeScaled;
+        boolean hasRootIndex = false;
+
+        private Info() throws IOException {
+            size = Files.size(path);
+            this.sizeScaled = FileUtils.byteCountToDisplaySize(size);
+        }
     }
 }

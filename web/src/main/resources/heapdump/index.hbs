@@ -2,16 +2,49 @@
 <script type="text/javascript">
 $(function() {
     $("#delete").click(function() {
-        $.dialog("Deleting...", null, false);
-        $.ajax("delete")
-            .done(function() {
-                window.location = "../list.html";
-                $.dialog("Dump deleted successfully");
-            })
-            .error(function() {
-                data = JSON.parse(x.responseText);
-                $.dialog("Failed to delete heap dump", data.error);
-            });
+        $.dialog_action({
+            url: "delete",
+            progress: {
+                title: "Deleting..."
+            },
+            success: {
+                action: function() { window.location = "../list.html"; },
+                title: "Dump deleted successfully"
+            },
+            failure: {
+                title: "Failed to delete heap dump"
+            }
+        });
+    });
+    $("#clear_cache").click(function() {
+        $.dialog_action({
+            url: "close",
+            progress: {
+                title: "Clearing cache..."
+            },
+            success: {
+                action: function() { window.location.reload(); },
+                title: "Cache cleared successfully"
+            },
+            failure: {
+                title: "Failed to clear cache"
+            }
+        });
+    });
+    $("#load").click(function() {
+        $.dialog_action({
+            url: "load",
+            progress: {
+                title: "Loading..."
+            },
+            success: {
+                action: function() { window.location.reload(); },
+                title: "Loaded successfully"
+            },
+            failure: {
+                title: "Failed to load index"
+            }
+        });
     });
 });
 </script>
@@ -23,6 +56,16 @@ $(function() {
         <dd>{{name}}</dd>
         <dt>Size</dt>
         <dd><span title="{{size}} bytes">{{sizeScaled}}</span></dd>
+        {{#if hasRootIndex}}
+        <dt>Version</dt>
+        <dd>{{version}}</dd>
+        <dt>Time</dt>
+        <dd><span title="UNIX {{time}}">{{timeFormatted}}</span></dd>
+        <dt>Identifier Size</dt>
+        <dd>{{identifierSize}} bytes</dd>
+        <dt>String table size</dt>
+        <dd>{{stringCount}}</dd>
+        {{/if}}
     </dl>
 
     <button class="btn btn-success{{#if hasRootIndex}} disabled{{/if}}" id="load">Load more</button>

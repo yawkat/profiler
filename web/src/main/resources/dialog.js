@@ -50,3 +50,19 @@ $.dialog = function(title, text, cancellable) {
 $.dialog_hide = function() {
     $("#dialog").slideUp();
 };
+
+$.dialog_action = function(opts) {
+    $.dialog(opts.progress.title, opts.progress.text, opts.progress.cancellable);
+    $.ajax(opts.url)
+        .done(function() {
+            var a = opts.success;
+            $.dialog(a.title, a.text, a.cancellable);
+            if (a.action) { a.action(); }
+        })
+        .error(function() {
+            var a = opts.failure;
+            data = JSON.parse(x.responseText);
+            $.dialog(a.title, a.text || data.error, a.cancellable);
+            if (a.action) { a.action(); }
+        });
+}

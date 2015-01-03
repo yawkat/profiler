@@ -21,7 +21,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
 
 /**
  * @author yawkat
@@ -112,7 +111,7 @@ class HeapDumpContext extends Aspect {
 
         private Info() throws IOException {
             size = Files.size(path);
-            this.sizeScaled = FileUtils.byteCountToDisplaySize(size);
+            this.sizeScaled = IndexerContext.bytesToString(size);
             if (hasRootIndex) {
                 frIndexer();
             }
@@ -135,7 +134,7 @@ class HeapDumpContext extends Aspect {
             identifierSize = indexer.getHeader().identifierSize;
             stringCount = indexer.getStringIndex().size();
             stringBytes = indexer.getStringIndex().sizeBytes();
-            stringBytesScaled = FileUtils.byteCountToDisplaySize(stringBytes);
+            stringBytesScaled = IndexerContext.bytesToString(stringBytes);
             hasNoTagIndex = !indexerContext.isComplete();
         }
     }

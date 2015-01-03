@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
 
 /**
  * @author yawkat
@@ -63,6 +62,7 @@ class IndexerContext extends Aspect {
             this.prevPageStart = start - pageSize;
             this.nextPageStart = start + pageSize;
             this.pageSize = pageSize;
+            //noinspection Convert2MethodRef
             this.types = indexer.getTypeIndex().stream()
                     .sorted(Comparator.comparingInt(td -> -td.getInstanceCount()))
                     .skip(start)
@@ -82,7 +82,7 @@ class IndexerContext extends Aspect {
             name = data.getName();
             instanceCount = breakUpToString(data.getInstanceCount());
             memoryUsage = breakUpToString(data.getMemoryUsage());
-            memoryUsageScaled = FileUtils.byteCountToDisplaySize(data.getMemoryUsage());
+            memoryUsageScaled = bytesToString(data.getMemoryUsage());
         }
     }
 
@@ -101,5 +101,26 @@ class IndexerContext extends Aspect {
             uint /= 10;
         }
         return result.toString();
+    }
+
+    static String bytesToString(long bytes) {
+        String[] suffixes = { "B", "KB", "MB", "GB", "TB", "PB", "EB" };
+        int suffixIndex = 0;
+        double bytesD = bytes;
+        while (bytesD > 1024 && suffixIndex < suffixes.length) {
+            bytesD /= 1024;
+            suffixIndex++;
+        }
+        StringBuilder res = new StringBuilder();
+        if (suffixIndex == 0) {
+            res.append(bytes);
+        } else if (bytesD < 10) {
+            res.append(Math.round(bytesD * 100) / 100F);
+        } else if (bytesD < 100) {
+            res.append(Math.round(bytesD * 10) / 10F);
+        } else {
+            res.append(Math.round(bytesD));
+        }
+        return res.append(suffixes[suffixIndex]).toString();
     }
 }
